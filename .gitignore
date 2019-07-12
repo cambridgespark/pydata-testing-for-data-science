@@ -3,7 +3,6 @@ lib/
 bin/
 include/
 .Python/
-data/
 *.pickle
 *.joblib
 .ipynb_checkpoints/

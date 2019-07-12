@@ -7,7 +7,6 @@ pip install -r requirements.txt
 
 ## Commands available
 ```
-python run.py setup
 python run.py train
 python run.py test
 python run.py unittest

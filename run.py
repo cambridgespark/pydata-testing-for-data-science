@@ -10,25 +10,11 @@ import pytest
 
 from src.model import KickstarterModel as Model
 
-DATASET_URL = "https://s3-eu-west-1.amazonaws.com/kate-datasets/kickstarter/"
 TRAIN_NAME = "train.zip"
 TEST_NAME = "test.zip"
 
 DATA_DIR = "data"
 JOBLIB_NAME = 'model.joblib'
-
-
-def setup_data():
-    if not os.path.isdir(DATA_DIR):
-        os.makedirs(DATA_DIR)
-
-    for filename in [TRAIN_NAME, TEST_NAME]:
-        print("Downloading {}...".format(filename))
-        req = urllib.request.urlopen(DATASET_URL + filename)
-        data = req.read()
-
-        with open(os.path.join(DATA_DIR, filename), "wb") as f:
-            f.write(data)
 
 
 def train_model():
@@ -38,17 +24,15 @@ def train_model():
     X_train, y_train = my_model.preprocess_training_data(df)
     my_model.fit(X_train, y_train)
 
-    # Save to pickle
-    with open(JOBLIB_NAME, 'wb') as f:
-        joblib.dump(my_model, f)
+    # Save JOB
+    joblib.dump(my_model, JOBLIB_NAME)
 
 
 def test_model():
     df = pd.read_csv(os.sep.join([DATA_DIR, TEST_NAME]))
 
     # Load JOB
-    with open(JOBLIB_NAME, 'rb') as f:
-        my_model = joblib.load(f)
+    my_model = joblib.load(JOBLIB_NAME)
 
     X_test = my_model.preprocess_unseen_data(df)
     preds = my_model.predict(X_test)
@@ -63,8 +47,8 @@ def main():
         'stage',
         metavar='stage',
         type=str,
-        choices=['setup', 'train', 'test', 'unittest', 'coverage', 'hypothesis', 'exercises'],
-        help="Stage to run. Either setup, train, test, unittest, coverage, hypothesis or exercises")
+        choices=['train', 'test', 'unittest', 'coverage', 'hypothesis', 'exercises'],
+        help="Stage to run. Either train, test, unittest, coverage, hypothesis or exercises")
 
     if len(sys.argv[1:]) == 0:
         parser.print_help()
@@ -72,11 +56,7 @@ def main():
 
     stage = parser.parse_args().stage
 
-    if stage == "setup":
-        setup_data()
-        print("\nSetup was successful!")
-
-    elif stage == "train":
+    if stage == "train":
         print("Training model...")
         train_model()
 
