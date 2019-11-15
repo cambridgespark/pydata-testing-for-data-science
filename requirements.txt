@@ -5,3 +5,4 @@ pytest
 pytruth
 pytest-cov
 hypothesis[pandas]
+requests
